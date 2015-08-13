@@ -12,7 +12,7 @@ public class RSA {
 	private BigInteger N;
 	private BigInteger Z;
 	private BigInteger D;
-	private BigInteger E = new BigInteger("65537");
+	public BigInteger E = new BigInteger("65537");
 	
 	//Default Constructor
 	RSA(){
@@ -35,6 +35,7 @@ public class RSA {
 		D = E.modInverse(Z);
 		primeOne = null;
 		primeTwo = null;
+		System.out.println("Keys Generated");
 		//Set the prime numbers to null after the keys are generated
 		//Clear D after displayed
 	}
@@ -50,21 +51,22 @@ public class RSA {
 		file.close();
 	}
 	
-	private void saveKeys(Scanner inputText) throws FileNotFoundException{
-		//Scanner inputText = new Scanner(System.in);
-		System.out.println("Enter desired file name for the public keys: ");
-		String filename = inputText.nextLine();
-		System.out.println("Enter desired file name for the private key: ");
-		String privateFilename = inputText.nextLine();
-		//inputText.close();
+	void saveKeys(File publicKeys, File privateKey) throws FileNotFoundException{
+		
 		//Create the file
-		PrintWriter output = new PrintWriter(filename);
+		PrintWriter output = new PrintWriter(publicKeys);
 		output.println(N);
 		output.println(Z);
 		output.close();
-		output = new PrintWriter(privateFilename);
+		output = new PrintWriter(privateKey);
 		output.println(D);
 		output.close();
+		System.out.println("Keys have been saved");
+	}
+	
+	void deleteKeys(){
+		N = Z = D = E = null;
+		System.out.println("Keys Have Been Deleted");
 	}
 	
 	private BigInteger genPrime(){
@@ -142,7 +144,6 @@ public class RSA {
 		ArrayList<BigInteger> encryptedMessage = object.encrypt(message);
 		System.out.println(encryptedMessage);
 		System.out.println(object.decrypt(encryptedMessage));
-		object.saveKeys(input);
 		input.close();
 	}
 
