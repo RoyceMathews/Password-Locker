@@ -9,10 +9,10 @@ import java.util.Scanner;
 public class RSA {
 	private BigInteger primeOne;
 	private BigInteger primeTwo;
-	private BigInteger N;
-	private BigInteger Z;
-	private BigInteger D;
-	public BigInteger E = new BigInteger("65537");
+	static public BigInteger N;
+	static private BigInteger Z;
+	static private BigInteger D;
+	static public BigInteger E = new BigInteger("65537");
 	
 	//Default Constructor
 	RSA(){
@@ -35,36 +35,42 @@ public class RSA {
 		D = E.modInverse(Z);
 		primeOne = null;
 		primeTwo = null;
+		System.gc();
 		System.out.println("Keys Generated");
 		//Set the prime numbers to null after the keys are generated
 		//Clear D after displayed
 	}
 	
 	//Constructor for when the keys have already been generated
-	RSA(File publicKeys, File privateKey) throws FileNotFoundException{
-		Scanner file = new Scanner(publicKeys);
+	RSA(String publicKeys, String privateKey) throws FileNotFoundException{
+		File publicFile = new File(publicKeys);
+		File privateFile = new File(privateKey);
+		Scanner file = new Scanner(publicFile);
 		N = new BigInteger(file.nextLine()); 
 		Z = new BigInteger(file.nextLine()); 
 		file.close();
-		file = new Scanner(privateKey);
+		file = new Scanner(privateFile);
 		D = new BigInteger(file.nextLine()); 
 		file.close();
 	}
 	
-	void saveKeys(File publicKeys, File privateKey) throws FileNotFoundException{
+	static void saveKeys(String publicKeys, String privateKey) throws FileNotFoundException{
 		
 		//Create the file
-		PrintWriter output = new PrintWriter(publicKeys);
+		File publicFile = new File(publicKeys);
+		File privateFile = new File(privateKey);
+		PrintWriter output = new PrintWriter(publicFile);
 		output.println(N);
 		output.println(Z);
 		output.close();
-		output = new PrintWriter(privateKey);
+		
+		output = new PrintWriter(privateFile);
 		output.println(D);
 		output.close();
 		System.out.println("Keys have been saved");
 	}
 	
-	void deleteKeys(){
+	static void deleteKeys(){
 		N = Z = D = E = null;
 		System.out.println("Keys Have Been Deleted");
 	}
@@ -115,36 +121,6 @@ public class RSA {
 		// Debugging, seeing if all values are correct
 		//RSA object = new RSA();
 		
-		/*System.out.println(object.primeTwo + " " + object.primeOne);
-		System.out.println(object.Z);
-		System.out.println(object.N);
-		System.out.println(object.D);
-		BigInteger temp = (object.D).multiply(object.E);
-		System.out.println(temp.mod(object.Z));
-		*/
-		Scanner input = new Scanner(System.in);
-		System.out.println("Enter a Message: ");
-		String message = input.nextLine();
-		System.out.println("Enter a public Key file name: ");
-		String filename = input.nextLine();
-		System.out.println("Enter a private Key file name: ");
-		String privateFilename = input.nextLine();
-		RSA object = new RSA(new File(filename), new File(privateFilename));
-		//Scanner file = new Scanner(new File(filename));
-		
-		//String text = "";	// empty string is created
-		/*while(file.hasNext()){	// as long as there is another character, the loop keep running
-			text = text + file.nextLine();	// the next character is added to the string
-		}
-		file.close();*/
-		
-		System.out.println(object.Z);
-		System.out.println(object.N);
-		System.out.println(object.D);
-		ArrayList<BigInteger> encryptedMessage = object.encrypt(message);
-		System.out.println(encryptedMessage);
-		System.out.println(object.decrypt(encryptedMessage));
-		input.close();
 	}
 
 }

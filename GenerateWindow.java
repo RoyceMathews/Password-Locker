@@ -13,9 +13,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 
 public class GenerateWindow{
-	public static Scene display(MenuBar menuBar, HBox bot, RSA object){
+	public static void display(MenuBar menuBar, HBox bot, Stage window){
 		BorderPane generateLayout = new BorderPane();
 		generateLayout.setTop(menuBar);
 		GridPane RSAGrid = new GridPane();
@@ -44,12 +45,13 @@ public class GenerateWindow{
 			@Override
 			public void handle (ActionEvent event) {
 				try {
-					object.saveKeys(new File(saveInput.getText()), new File(savePrivateInput.getText()));
+					RSA newObject =  new RSA();
+					RSA.saveKeys(saveInput.getText(), savePrivateInput.getText());
 					Label generated = new Label("Keys have been generated and saved.");
 					GridPane.setConstraints(generated, 1 , 2);
 					RSAGrid.getChildren().remove(saveButton);
 					RSAGrid.getChildren().add(generated);
-					
+					System.out.println(RSA.N);
 				} catch (FileNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -64,9 +66,6 @@ public class GenerateWindow{
 		generateLayout.setCenter(RSAGrid);
 		generateLayout.setBottom(bot);
 		Scene enterScene = new Scene(generateLayout);
-		System.out.println(object.E);
-		//Re write so the object assignment for the RSA algorithm doesn't occur within the try catch block
-		return enterScene;
-		
+		window.setScene(enterScene);		
 	}
 }

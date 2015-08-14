@@ -16,8 +16,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 public class ImportWindow{
-	private static RSA importedObject;
-	public static RSA display(MenuBar menuBar, HBox bot, RSA object, Stage window){
+	public static void display(MenuBar menuBar, HBox bot, Stage window){
 		BorderPane importLayout = new BorderPane();
 		importLayout.setTop(menuBar);
 		GridPane importGrid = new GridPane();
@@ -45,18 +44,39 @@ public class ImportWindow{
 		importKeysButton.setOnAction(new EventHandler<ActionEvent>(){
 			@Override
 			public void handle (ActionEvent event) {
+				
 				try {
-					importedObject = new RSA(new File(importInput.getText()), new File(importPrivateInput.getText()));
+					File publicFile  = new File(importInput.getText());
+					File privateFile = new File(importPrivateInput.getText());
+					
+					if(publicFile.exists() && (!privateFile.exists())){
+						AlertBox.display("Error", "Invalid Private File");
+					}
+					
+					else if((!publicFile.exists()) && (privateFile.exists())){
+						AlertBox.display("Error", "Invalid Public File");
+					}
+					
+					else if((!publicFile.exists()) && (!privateFile.exists())){
+						AlertBox.display("Error", "Invalid Private and Public File");
+					}
+					
+					else if(publicFile.exists() && privateFile.exists()){
+						RSA newObject = new RSA(importInput.getText(), importPrivateInput.getText());
+						
+						Label imported = new Label("Keys have been generated and saved.");
+						GridPane.setConstraints(imported, 1 , 2);
+						
+						importGrid.getChildren().remove(importKeysButton);
+						importGrid.getChildren().add(imported);
+					}
+					
 				} catch (FileNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				Label imported = new Label("Keys have been generated and saved.");
-				GridPane.setConstraints(imported, 1 , 2);
-				importGrid.getChildren().remove(importKeysButton);
-				importGrid.getChildren().add(imported);
-							
 			}
+									
 		});			
 		GridPane.setConstraints(importKeysButton, 1, 2);
 		
@@ -68,6 +88,5 @@ public class ImportWindow{
 		Scene importScene = new Scene(importLayout);
 		window.setScene(importScene);
 		
-		return importedObject;
 	}
 }

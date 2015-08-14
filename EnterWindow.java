@@ -10,7 +10,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
 public class EnterWindow {
-	public static Scene display(MenuBar menuBar, HBox bot, RSA object){
+	public static Scene display(MenuBar menuBar, HBox bot){
 		BorderPane enterLayout = new BorderPane();
 		GridPane grid = new GridPane();
 		grid.setPadding(new Insets( 20, 20, 20, 20));

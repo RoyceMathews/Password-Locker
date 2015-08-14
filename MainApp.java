@@ -24,7 +24,7 @@ import javafx.geometry.Pos;
 
 public class MainApp extends Application{
 
-	private static RSA object = null;
+	//private RSA object = null;
 	Stage window;
 	
 	
@@ -52,7 +52,7 @@ public class MainApp extends Application{
 		
 		window.setOnCloseRequest(e -> {
 			e.consume();
-			object = null;
+			RSA.deleteKeys();
 			System.gc();
 			System.out.println("Properly Closed");
 			closeProgram();
@@ -73,36 +73,15 @@ public class MainApp extends Application{
 		generateButton.setText("Generate RSA Keys");
 		bot.getChildren().add(generateButton);
 		generateButton.setOnAction(e -> {
-			
-			
-			//Re write so the object assignment for the RSA algorithm doesn't occur within the try catch block
-			
-			
-			
-			
-			
-			window.setScene(GenerateWindow.display(menuBar, bot, object));		
-			
-			
-			
-			
-			//Re write so the object assignment for the RSA algorithm doesn't occur within the try catch block
-			});
+			//Displays the Generate Window
+			GenerateWindow.display(menuBar, bot, window);		
+		});
 		
 		Button importButton = new Button("Import");
 		importButton.setText("Import RSA Keys");
 		importButton.setOnAction(e -> { 
-			
-			
-			//Re write so the object assignment for the RSA algorithm doesn't occur within the try catch block
-			
-			
-			object =  ImportWindow.display(menuBar, bot, object, window);
-			
-			
-			
-			//Re write so the object assignment for the RSA algorithm doesn't occur within the try catch block
-						
+			// Displays The Import Window
+			ImportWindow.display(menuBar, bot, window);
 		});
 		bot.getChildren().add(importButton);
 		
@@ -110,14 +89,14 @@ public class MainApp extends Application{
 		enterButton.setText("Enter New Data");
 		enterButton.setOnAction(e -> {
 			
-			window.setScene(EnterWindow.display(menuBar, bot, object));
+			window.setScene(EnterWindow.display(menuBar, bot));
 			
 		});
 		bot.getChildren().add(enterButton);
 		
 		Button retrieveButton = new Button("Retrieve");
 		retrieveButton.setText("Retrieve Data");
-		//retrieveButton.setOnAction();
+		retrieveButton.setOnAction(e -> System.out.println(RSA.N));
 		bot.getChildren().add(retrieveButton);
 				
 		BorderPane layout = new BorderPane();
