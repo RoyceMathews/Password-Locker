@@ -20,6 +20,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import java.sql.SQLException;
 
 
 public class MainApp extends Application{
@@ -96,7 +97,13 @@ public class MainApp extends Application{
 		
 		Button retrieveButton = new Button("Retrieve");
 		retrieveButton.setText("Retrieve Data");
-		retrieveButton.setOnAction(e -> System.out.println(RSA.N));
+		retrieveButton.setOnAction(e -> {
+			
+		System.out.println(RSA.N);
+		System.out.println(RSA.encrypt("hello"));
+		
+		
+		});
 		bot.getChildren().add(retrieveButton);
 				
 		BorderPane layout = new BorderPane();
