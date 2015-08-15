@@ -1,25 +1,13 @@
-import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextField;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import java.sql.SQLException;
 
 
@@ -47,7 +35,11 @@ public class MainApp extends Application{
 		fileMenu.getItems().add(new MenuItem("Enter New Data"));
 		fileMenu.getItems().add(new MenuItem("Retrieve Data"));
 		*/
-		fileMenu.getItems().add(new MenuItem("Exit"));
+		MenuItem Exit = new MenuItem("Exit");
+		Exit.setOnAction(e -> {
+			closeProgram();
+		});
+		fileMenu.getItems().add(Exit);
 		
 		//Main Menu Bar
 		MenuBar menuBar = new MenuBar();
@@ -55,15 +47,8 @@ public class MainApp extends Application{
 		
 		window.setOnCloseRequest(e -> {
 			e.consume();
-			RSA.deleteKeys();
-			System.gc();
-			System.out.println("Properly Closed");
 			closeProgram();
 		});
-		
-		
-		
-		
 		
 		
 		
@@ -91,8 +76,8 @@ public class MainApp extends Application{
 		Button enterButton = new Button("Enter");
 		enterButton.setText("Enter New Data");
 		enterButton.setOnAction(e -> {
-			
-			window.setScene(EnterWindow.display(menuBar, bot));
+			// Displays The Enter Window
+			EnterWindow.display(menuBar, bot, window);
 			
 		});
 		bot.getChildren().add(enterButton);
@@ -101,31 +86,7 @@ public class MainApp extends Application{
 		retrieveButton.setText("Retrieve Data");
 		retrieveButton.setOnAction(e -> {
 		
-		/*
-		System.out.println(RSA.N);
-		String test = RSA.encrypt("Ayy Lmao Boys! <>!/'ZXCaSD32#%%^~` asdadasdjnkn#%%&%^&%^&#$%#$%#");
-		System.out.println(test);
-		System.out.println(RSA.decrypt(test));
-		*/
-		
-			try {
-				Database.initialize();
-				Database.connect();
-				Database.resultSet = Database.statement.executeQuery("SELECT encryptedpass FROM credentials");
-				while(Database.resultSet.next()){
-					// when the query string has multiple columns, the int in getString below corresponds to the 
-					//column
-					String string = RSA.decrypt(Database.resultSet.getString(1));
-					System.out.println(string.length() + " " + string);
-				} 
-				Database.closeConnection();
-			}catch (ClassNotFoundException e1) {
-				AlertBox.display("Error", "Error Loading MySQL Driver");
-			}
-			catch (SQLException e1) {
-				AlertBox.display("Error", "Error with Connection to Database");
-			}	
-		
+			RetrieveWindow.display(menuBar, bot, window);
 		});
 		bot.getChildren().add(retrieveButton);
 				
@@ -143,7 +104,16 @@ public class MainApp extends Application{
 	}
 
 	private void closeProgram(){
-		//System.out.println("Closed Properly");
+		RSA.deleteKeys();
+		System.gc();
+		try {
+			if(Database.connected == true){
+				Database.closeConnection();
+			}
+		} catch (SQLException e1) {
+			AlertBox.display("error", "Error While Closing Connection");
+		}
+		System.out.println("Properly Closed");
 		window.close();
 	}
 }
