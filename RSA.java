@@ -86,18 +86,21 @@ public class RSA {
 		return prime;
 	}
 	
-	static ArrayList<BigInteger> encrypt(String message){
+	static String encrypt(String message){
 		BigInteger [] encryptionTable = new BigInteger[8483];
 		BigInteger BigIntAtI;
-		ArrayList<BigInteger> encryptedMessage = new ArrayList<>();
+		//ArrayList<BigInteger> encryptedMessage = new ArrayList<>();
+		String encryptedMessage = "";
 		for (int i = 0; i < message.length(); i++){
 			if( encryptionTable[(int)message.charAt(i)] == null){
 				BigIntAtI = BigInteger.valueOf((long)message.charAt(i));
 				encryptionTable[(int)message.charAt(i)] = BigIntAtI.modPow(E , N);
-				encryptedMessage.add(encryptionTable[(int)message.charAt(i)]);				
+				encryptedMessage = encryptedMessage + (encryptionTable[(int)message.charAt(i)]) + " ";
+				//encryptedMessage.add(encryptionTable[(int)message.charAt(i)]);				
 			}
 			else{
-				encryptedMessage.add(encryptionTable[(int)message.charAt(i)]);
+				encryptedMessage = encryptedMessage + (encryptionTable[(int)message.charAt(i)]) + " ";
+				//encryptedMessage.add(encryptionTable[(int)message.charAt(i)]);
 			}
 		}
 		encryptionTable = null;
