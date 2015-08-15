@@ -1,3 +1,4 @@
+import java.sql.SQLException;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -8,9 +9,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 
 public class EnterWindow {
-	public static Scene display(MenuBar menuBar, HBox bot){
+	public static void display(MenuBar menuBar, HBox bot, Stage window){
+		
 		BorderPane enterLayout = new BorderPane();
 		GridPane grid = new GridPane();
 		grid.setPadding(new Insets( 20, 20, 20, 20));
@@ -44,8 +47,46 @@ public class EnterWindow {
 		passwordInput.setPromptText("Password");
 		GridPane.setConstraints(passwordInput, 1, 2);
 		
+		/*
+		PasswordField passwordInput = new PasswordField();
+		passwordField.setPromptText("Password");
+		GridPane.setConstraints(passwordInput, 1, 2);
+		 * Use this if you want 
+		 */
+		
 		Button submitButton = new Button("Submit");
 		submitButton.setText("Submit Data");
+		submitButton.setOnAction(e -> {
+			try {
+				if(Database.initialized == false){
+					Database.initialize();
+				}
+				if(Database.connected == false){
+					Database.connect();
+				}
+				if(siteInput.getText().isEmpty() || nameInput.getText().isEmpty() || passwordInput.getText().isEmpty()){
+					AlertBox.display("Empty Field", "Please fill the empty field.");
+				}
+				else{
+				String query = "INSERT INTO credentials (website, username, encryptedpass) VALUES (?, ?, ?)";
+				Database.setQuery(query);
+				Database.prpStmt.setString(1, siteInput.getText());
+				Database.prpStmt.setString(2, nameInput.getText());
+				Database.prpStmt.setString(3, RSA.encrypt(passwordInput.getText()));
+				Database.prpStmt.execute();
+				
+				AlertBox.display("Success", "Data has been Inserted!");
+				siteInput.clear();
+				nameInput.clear();
+				passwordInput.clear();
+				}
+			}catch (ClassNotFoundException e1) {
+				AlertBox.display("Error", "Error Loading MySQL Driver");
+			}
+			catch (SQLException e2) {
+				AlertBox.display("Error", "Error with Connection to Database");
+			}
+		});
 		GridPane.setConstraints(submitButton, 1, 3);
 		
 		grid.getChildren().addAll(siteLabel, siteInput, nameLabel, nameInput, passwordLabel, passwordInput, submitButton);
@@ -54,6 +95,6 @@ public class EnterWindow {
 		enterLayout.setCenter(grid);
 		enterLayout.setBottom(bot);
 		Scene enterScene = new Scene(enterLayout);
-		return enterScene;
+		window.setScene(enterScene);
 	}
 }
