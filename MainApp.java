@@ -41,10 +41,12 @@ public class MainApp extends Application{
 		
 		//File menu
 		Menu fileMenu = new Menu("File");
+		/*
 		fileMenu.getItems().add(new MenuItem("Generate New Keys"));
 		fileMenu.getItems().add(new MenuItem("Import Existing Keys"));
 		fileMenu.getItems().add(new MenuItem("Enter New Data"));
 		fileMenu.getItems().add(new MenuItem("Retrieve Data"));
+		*/
 		fileMenu.getItems().add(new MenuItem("Exit"));
 		
 		//Main Menu Bar
@@ -98,10 +100,31 @@ public class MainApp extends Application{
 		Button retrieveButton = new Button("Retrieve");
 		retrieveButton.setText("Retrieve Data");
 		retrieveButton.setOnAction(e -> {
-			
-		System.out.println(RSA.N);
-		System.out.println(RSA.encrypt("hello"));
 		
+		/*
+		System.out.println(RSA.N);
+		String test = RSA.encrypt("Ayy Lmao Boys! <>!/'ZXCaSD32#%%^~` asdadasdjnkn#%%&%^&%^&#$%#$%#");
+		System.out.println(test);
+		System.out.println(RSA.decrypt(test));
+		*/
+		
+			try {
+				Database.initialize();
+				Database.connect();
+				Database.resultSet = Database.statement.executeQuery("SELECT encryptedpass FROM credentials");
+				while(Database.resultSet.next()){
+					// when the query string has multiple columns, the int in getString below corresponds to the 
+					//column
+					String string = RSA.decrypt(Database.resultSet.getString(1));
+					System.out.println(string.length() + " " + string);
+				} 
+				Database.closeConnection();
+			}catch (ClassNotFoundException e1) {
+				AlertBox.display("Error", "Error Loading MySQL Driver");
+			}
+			catch (SQLException e1) {
+				AlertBox.display("Error", "Error with Connection to Database");
+			}	
 		
 		});
 		bot.getChildren().add(retrieveButton);

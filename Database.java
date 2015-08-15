@@ -16,7 +16,7 @@ public class Database {
 		
 	static void initialize() throws ClassNotFoundException{
 		Class.forName("com.mysql.jdbc.Driver");
-		url = "jdbc:mysql://localhost:3306/shoutit";
+		url = "jdbc:mysql://localhost:3306/password_encryption";
 		username = "root";
 		password = "";
 	}

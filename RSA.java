@@ -107,15 +107,35 @@ public class RSA {
 		return encryptedMessage;		
 	}
 	
-	static String decrypt(ArrayList<BigInteger> encryptedMsg){
+	static String decrypt(String encryptedMsg){
 		String message = "";
 		BigInteger BigIntAtI;
+		ArrayList<BigInteger> encrypted = new ArrayList<>();
+		char CharAtI;
 		char decryptedChar;
-		for(int i = 0; i < encryptedMsg.size(); i++){
+		String encryptedBigInt = "";
+		for(int i = 0; i < encryptedMsg.length(); i++){
+			if(encryptedMsg.charAt(i) != ' '){
+				encryptedBigInt = encryptedBigInt + (encryptedMsg.charAt(i));
+				//System.out.println(encryptedMsg.charAt(i));
+				
+			}
+			else if(encryptedMsg.charAt(i) == ' '){
+				//encryptedBigInt = encryptedBigInt + " ";
+				BigIntAtI = new BigInteger(encryptedBigInt);
+				encryptedBigInt = "";
+				//CharAtI = encryptedMsg.charAt(i);
+				BigInteger postMod = BigIntAtI.modPow(D, N);
+				decryptedChar = (char)(postMod.intValue());
+				message = message + decryptedChar;
+			}
+			/*
+			CharAtI = encryptedMsg.charAt(i);
 			BigIntAtI = encryptedMsg.get(i);
 			BigInteger postMod = BigIntAtI.modPow(D, N);
 			decryptedChar = (char)(postMod.intValue());
 			message = message + decryptedChar;
+			*/
 		}
 		return message;
 	}
