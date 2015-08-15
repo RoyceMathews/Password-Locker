@@ -86,7 +86,7 @@ public class RSA {
 		return prime;
 	}
 	
-	ArrayList<BigInteger> encrypt(String message){
+	static ArrayList<BigInteger> encrypt(String message){
 		BigInteger [] encryptionTable = new BigInteger[8483];
 		BigInteger BigIntAtI;
 		ArrayList<BigInteger> encryptedMessage = new ArrayList<>();
@@ -104,7 +104,7 @@ public class RSA {
 		return encryptedMessage;		
 	}
 	
-	String decrypt(ArrayList<BigInteger> encryptedMsg){
+	static String decrypt(ArrayList<BigInteger> encryptedMsg){
 		String message = "";
 		BigInteger BigIntAtI;
 		char decryptedChar;
@@ -116,11 +116,5 @@ public class RSA {
 		}
 		return message;
 	}
-	
-	public static void main(String[] args) throws FileNotFoundException {
-		// Debugging, seeing if all values are correct
-		//RSA object = new RSA();
 		
-	}
-
 }
