@@ -89,18 +89,15 @@ public class RSA {
 	static String encrypt(String message){
 		BigInteger [] encryptionTable = new BigInteger[8483];
 		BigInteger BigIntAtI;
-		//ArrayList<BigInteger> encryptedMessage = new ArrayList<>();
 		String encryptedMessage = "";
 		for (int i = 0; i < message.length(); i++){
 			if( encryptionTable[(int)message.charAt(i)] == null){
 				BigIntAtI = BigInteger.valueOf((long)message.charAt(i));
 				encryptionTable[(int)message.charAt(i)] = BigIntAtI.modPow(E , N);
-				encryptedMessage = encryptedMessage + (encryptionTable[(int)message.charAt(i)]) + " ";
-				//encryptedMessage.add(encryptionTable[(int)message.charAt(i)]);				
+				encryptedMessage = encryptedMessage + (encryptionTable[(int)message.charAt(i)]) + " ";		
 			}
 			else{
 				encryptedMessage = encryptedMessage + (encryptionTable[(int)message.charAt(i)]) + " ";
-				//encryptedMessage.add(encryptionTable[(int)message.charAt(i)]);
 			}
 		}
 		encryptionTable = null;
@@ -116,26 +113,15 @@ public class RSA {
 		String encryptedBigInt = "";
 		for(int i = 0; i < encryptedMsg.length(); i++){
 			if(encryptedMsg.charAt(i) != ' '){
-				encryptedBigInt = encryptedBigInt + (encryptedMsg.charAt(i));
-				//System.out.println(encryptedMsg.charAt(i));
-				
+				encryptedBigInt = encryptedBigInt + (encryptedMsg.charAt(i));				
 			}
 			else if(encryptedMsg.charAt(i) == ' '){
-				//encryptedBigInt = encryptedBigInt + " ";
 				BigIntAtI = new BigInteger(encryptedBigInt);
 				encryptedBigInt = "";
-				//CharAtI = encryptedMsg.charAt(i);
 				BigInteger postMod = BigIntAtI.modPow(D, N);
 				decryptedChar = (char)(postMod.intValue());
 				message = message + decryptedChar;
 			}
-			/*
-			CharAtI = encryptedMsg.charAt(i);
-			BigIntAtI = encryptedMsg.get(i);
-			BigInteger postMod = BigIntAtI.modPow(D, N);
-			decryptedChar = (char)(postMod.intValue());
-			message = message + decryptedChar;
-			*/
 		}
 		return message;
 	}
