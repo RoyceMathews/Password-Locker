@@ -1,5 +1,6 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -10,7 +11,10 @@ public class Database {
 	static private String username;
 	static private String password;
 	static private Connection connection;
-	static Statement statement;
+	static private Statement statement;
+	static PreparedStatement prpStmt;
+	static boolean initialized = false;
+	static boolean connected = false;
 	static ResultSet resultSet;
 	
 		
@@ -19,6 +23,7 @@ public class Database {
 		url = "jdbc:mysql://localhost:3306/password_encryption";
 		username = "root";
 		password = "";
+		initialized = true;
 	}
 	
 	static void connect() throws SQLException {
@@ -26,33 +31,18 @@ public class Database {
 		connection = DriverManager.getConnection(url, username, password);
 		System.out.println("Database connected!");
 		statement = connection.createStatement();
+		connected = true;
+	}
+	
+	static void setQuery(String query) throws SQLException{
+		//resultSet = statement.executeQuery(query);
+		prpStmt = connection.prepareStatement(query);
 	}
 	
 	static void closeConnection() throws SQLException{
 		System.out.println("Connection Closed");
 		connection.close();
+		connected = false;
 	}
 			
 }
-
-/*
- * try {
-			Database.initialize();
-			Database.connect();
-			Database.resultSet = Database.statement.executeQuery("SELECT user, id FROM shouts");
-			while(Database.resultSet.next()){
-				// when the query string has multiple columns, the int in getString below corresponds to the 
-				//column
-				System.out.println(Database.resultSet.getString(1));
-			} 
-			Database.closeConnection();
-		}catch (ClassNotFoundException e1) {
-			AlertBox.display("Error", "Error Loading MySQL Driver");
-		}
-		catch (SQLException e1) {
-			AlertBox.display("Error", "Error with Connection to Database");
-		}
- * 
- * 
- * 
- */
