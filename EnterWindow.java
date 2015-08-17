@@ -1,4 +1,5 @@
 import java.sql.SQLException;
+import java.util.ArrayList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -57,34 +58,64 @@ public class EnterWindow {
 		Button submitButton = new Button("Submit");
 		submitButton.setText("Submit Data");
 		submitButton.setOnAction(e -> {
-			try {
-				if(Database.initialized == false){
-					Database.initialize();
-				}
-				if(Database.connected == false){
-					Database.connect();
-				}
-				if(siteInput.getText().isEmpty() || nameInput.getText().isEmpty() || passwordInput.getText().isEmpty()){
-					AlertBox.display("Empty Field", "Please fill the empty field.");
-				}
-				else{
-				String query = "INSERT INTO credentials (website, username, encryptedpass) VALUES (?, ?, ?)";
-				Database.setQuery(query);
-				Database.prpStmt.setString(1, siteInput.getText());
-				Database.prpStmt.setString(2, nameInput.getText());
-				Database.prpStmt.setString(3, RSA.encrypt(passwordInput.getText()));
-				Database.prpStmt.execute();
-				
-				AlertBox.display("Success", "Data has been Inserted!");
-				siteInput.clear();
-				nameInput.clear();
-				passwordInput.clear();
-				}
-			}catch (ClassNotFoundException e1) {
-				AlertBox.display("Error", "Error Loading MySQL Driver");
+			if(!RSA.doesExist()){
+				AlertBox.display("Error", "No Keys Exist, Please Generate Keys or Import Keys");
 			}
-			catch (SQLException e2) {
-				AlertBox.display("Error", "Error with Connection to Database");
+			else{
+				
+				try {
+					if(Database.initialized == false){
+						Database.initialize();
+					}
+					if(Database.connected == false){
+						Database.connect();
+					}
+					if(siteInput.getText().isEmpty() || nameInput.getText().isEmpty() || passwordInput.getText().isEmpty()){
+						AlertBox.display("Empty Field", "Please fill the empty field.");
+					}
+					else{
+						// Add a conditional to see if website and username already exist
+						String checkQuery = "SELECT username FROM credentials WHERE website = '" + siteInput.getText() + "'";
+						Database.setQuery(checkQuery);
+						Database.resultSet = Database.prpStmt.executeQuery();
+						
+						String name = nameInput.getText();
+						ArrayList<Boolean> status = new ArrayList<>();
+						while(Database.resultSet.next()){
+							if(name.equals(Database.resultSet.getString(1))){
+								status.clear();
+								status.add(false);
+							}
+							else{
+								if(!status.contains(true) && !status.contains(false)){
+									status.add(true);
+								}
+							}
+						}
+						
+						if(status.contains(true)){
+							String query = "INSERT INTO credentials (website, username, encryptedpass) VALUES (?, ?, ?)";
+							Database.setQuery(query);
+							Database.prpStmt.setString(1, siteInput.getText());
+							Database.prpStmt.setString(2, nameInput.getText());
+							Database.prpStmt.setString(3, RSA.encrypt(passwordInput.getText()));
+							Database.prpStmt.execute();
+				
+							AlertBox.display("Success", "Data has been Inserted!");
+							siteInput.clear();
+							nameInput.clear();
+							passwordInput.clear();
+						}
+						else{
+							AlertBox.display("Error", "Username already exists for this Website");
+						}
+					}
+				}catch (ClassNotFoundException e1) {
+					AlertBox.display("Error", "Error Loading MySQL Driver");
+				}
+				catch (SQLException e2) {
+					AlertBox.display("Error", "Error with Connection to Database");
+				}
 			}
 		});
 		GridPane.setConstraints(submitButton, 1, 3);
