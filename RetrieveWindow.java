@@ -67,7 +67,8 @@ public class RetrieveWindow {
 		GridPane.setConstraints(placeHolder, 1, 1);
 		
 		Button placeHolder2 = new Button("Retrieve Password");
-		GridPane.setConstraints(placeHolder2, 1, 2);		
+		GridPane.setConstraints(placeHolder2, 1, 2);	
+		// Placeholders are here because the the choiceboxes are not nested below, when the input is changed in the choiceboxes, the program throws exceptions.
 		
 		
 		ArrayList<String> usernameFromDatabase = new ArrayList<>();
@@ -87,8 +88,9 @@ public class RetrieveWindow {
 						if(requestedData.isEmpty()){
 							requestedData.add(0, websiteFromDatabase.get(new_value.intValue()));
 						}
-						else{
-						requestedData.set(0, websiteFromDatabase.get(new_value.intValue()));
+						else{	
+						requestedData.clear();
+						requestedData.add(0, websiteFromDatabase.get(new_value.intValue()));
 						}
 						try {
 							String query2 = "SELECT username FROM credentials WHERE website = '" + websiteFromDatabase.get(new_value.intValue()) + "'";
@@ -103,6 +105,9 @@ public class RetrieveWindow {
 							ObservableList<String> toUsernameBox = FXCollections.observableArrayList(usernameFromDatabase);
 							
 							usernameList.setItems(toUsernameBox);
+							if(!usernames.isEmpty()){
+								usernames.clear();
+							}
 							usernames.addAll((Collection<? extends String>) usernameFromDatabase);
 							usernameFromDatabase.clear(); // clear the list so if new website is picked, the usernames from the old website dont show in the box
 						} catch (SQLException e) {
@@ -116,20 +121,8 @@ public class RetrieveWindow {
 
 									@Override
 									public void changed(ObservableValue<? extends Number> ov, Number value, Number new_value) {
-										//System.out.println(requestedData);
 										//Store username in requestedData, add submit button that will send the requestedData Arraylist to the displayPassword Method in AlertBox
-										try{
-										if(requestedData.size() < 2){
-											requestedData.add(1, usernames.get(new_value.intValue()));
-											
-										}
-										}catch(IndexOutOfBoundsException e){
-											
-										
-										requestedData.remove(1);
 										requestedData.add(1, usernames.get(new_value.intValue()));
-										}
-										
 									}
 									
 								});
@@ -150,14 +143,13 @@ public class RetrieveWindow {
 									AlertBox.display("Error", "No Keys Exist, Please Generate Keys or Import Keys");
 								}
 								else{
-									if(requestedData.size() < 3){
-										requestedData.add(2, RSA.decrypt(encryptedPassword));
-									}
-									else{
-									requestedData.set(2, RSA.decrypt(encryptedPassword));
-									}
+								
+									requestedData.add(2, RSA.decrypt(encryptedPassword));
 									AlertBox.displayPassword(requestedData);
 									requestedData.clear();
+									
+									//The code below can be added if it is desired to close the program after displaying the password
+									/*
 									if(RSA.doesExist()){
 										RSA.deleteKeys();
 										}
@@ -171,7 +163,9 @@ public class RetrieveWindow {
 										}
 										System.out.println("Properly Closed");
 										window.close();
-										// username and password not updating
+										
+										 * 
+										 */
 									
 								}			
 							} catch (SQLException e1) {
