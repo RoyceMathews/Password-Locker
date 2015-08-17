@@ -9,10 +9,11 @@ import java.util.Scanner;
 public class RSA {
 	private BigInteger primeOne;
 	private BigInteger primeTwo;
-	static public BigInteger N;
+	static private BigInteger N;
 	static private BigInteger Z;
 	static private BigInteger D;
-	static public BigInteger E = new BigInteger("65537");
+	static private BigInteger E = new BigInteger("65537");
+	static private boolean exists = false;
 	
 	//Default Constructor
 	RSA(){
@@ -37,6 +38,7 @@ public class RSA {
 		primeTwo = null;
 		System.gc();
 		System.out.println("Keys Generated");
+		exists = true;
 		//Set the prime numbers to null after the keys are generated
 		//Clear D after displayed
 	}
@@ -52,6 +54,7 @@ public class RSA {
 		file = new Scanner(privateFile);
 		D = new BigInteger(file.nextLine()); 
 		file.close();
+		exists = true;
 	}
 	
 	static void saveKeys(String publicKeys, String privateKey) throws FileNotFoundException{
@@ -68,6 +71,10 @@ public class RSA {
 		output.println(D);
 		output.close();
 		System.out.println("Keys have been saved");
+	}
+	
+	static boolean doesExist(){
+		return exists;
 	}
 	
 	static void deleteKeys(){
