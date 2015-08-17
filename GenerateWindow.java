@@ -49,7 +49,6 @@ public class GenerateWindow{
 					GridPane.setConstraints(generated, 1 , 2);
 					RSAGrid.getChildren().remove(saveButton);
 					RSAGrid.getChildren().add(generated);
-					System.out.println(RSA.N);
 				} catch (FileNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
