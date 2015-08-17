@@ -104,7 +104,9 @@ public class MainApp extends Application{
 	}
 
 	private void closeProgram(){
+		if(RSA.doesExist()){
 		RSA.deleteKeys();
+		}
 		System.gc();
 		try {
 			if(Database.connected == true){
