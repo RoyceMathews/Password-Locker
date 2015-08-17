@@ -16,8 +16,8 @@ public class Database {
 	static boolean initialized = false;
 	static boolean connected = false;
 	static ResultSet resultSet;
-	
-		
+
+
 	static void initialize() throws ClassNotFoundException{
 		Class.forName("com.mysql.jdbc.Driver");
 		url = "jdbc:mysql://localhost:3306/password_encryption";
@@ -25,7 +25,7 @@ public class Database {
 		password = "";
 		initialized = true;
 	}
-	
+
 	static void connect() throws SQLException {
 		System.out.println("Connecting database...");
 		connection = DriverManager.getConnection(url, username, password);
@@ -33,16 +33,16 @@ public class Database {
 		statement = connection.createStatement();
 		connected = true;
 	}
-	
+
 	static void setQuery(String query) throws SQLException{
 		//resultSet = statement.executeQuery(query);
 		prpStmt = connection.prepareStatement(query);
 	}
-	
+
 	static void closeConnection() throws SQLException{
 		System.out.println("Connection Closed");
 		connection.close();
 		connected = false;
 	}
-			
+
 }
