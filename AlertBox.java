@@ -62,6 +62,7 @@ public class AlertBox {
 		
 		Button closeButton = new Button("Close Window");
 		closeButton.setOnAction(e -> {
+			data.clear();
 			window.close();
 		});
 		GridPane.setConstraints(closeButton, 1, 3);
