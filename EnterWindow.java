@@ -75,24 +75,30 @@ public class EnterWindow {
 					}
 					else{
 						// Add a conditional to see if website and username already exist
+						
 						String checkQuery = "SELECT username FROM credentials WHERE website = '" + siteInput.getText() + "'";
 						Database.setQuery(checkQuery);
 						Database.resultSet = Database.prpStmt.executeQuery();
 						
 						String name = nameInput.getText();
 						ArrayList<Boolean> status = new ArrayList<>();
+						//while loop not running
+						// query might be wrong?
 						while(Database.resultSet.next()){
+							System.out.println("In while");
 							if(name.equals(Database.resultSet.getString(1))){
 								status.clear();
 								status.add(false);
+								System.out.println(status + "if");
 							}
 							else{
 								if(!status.contains(true) && !status.contains(false)){
 									status.add(true);
+									System.out.println(status + "else");
 								}
 							}
 						}
-						
+						System.out.println(status);
 						if(status.contains(true)){
 							String query = "INSERT INTO credentials (website, username, encryptedpass) VALUES (?, ?, ?)";
 							Database.setQuery(query);
