@@ -13,7 +13,7 @@ import java.sql.SQLException;
 
 public class MainApp extends Application{
 
-	//private RSA object = null;
+	
 	Stage window;
 	
 	
@@ -29,21 +29,61 @@ public class MainApp extends Application{
 		
 		//File menu
 		Menu fileMenu = new Menu("File");
+		Menu editMenu = new Menu("Edit");
+		Menu connectMenu = new Menu("Connection");
 		/*
 		fileMenu.getItems().add(new MenuItem("Generate New Keys"));
 		fileMenu.getItems().add(new MenuItem("Import Existing Keys"));
 		fileMenu.getItems().add(new MenuItem("Enter New Data"));
 		fileMenu.getItems().add(new MenuItem("Retrieve Data"));
 		*/
+		//Add an update and a delete menu item
+		//Add Change Connection, Connect, and Disconnect
 		MenuItem Exit = new MenuItem("Exit");
 		Exit.setOnAction(e -> {
 			closeProgram();
 		});
 		fileMenu.getItems().add(Exit);
 		
+		MenuItem Update = new MenuItem("Update");
+		Update.setOnAction(e -> {
+			UpdateTable.display();
+		});
+		MenuItem Delete = new MenuItem("Delete");
+		Delete.setOnAction(e -> {
+			DeleteFromTable.display();
+		});
+		editMenu.getItems().addAll(Update, Delete);
+				
+		MenuItem Connect = new MenuItem("Connect");
+		Connect.setOnAction(e -> {
+			try {
+				Database.initialize();
+				Database.connect();
+			} catch (ClassNotFoundException e1) {
+				AlertBox.display("Error", "Error Loading MySQL Driver");
+			} catch (SQLException e2){
+				AlertBox.display("Connection Error", "Error with Connection to Database");
+			}
+		});
+		
+		
+		MenuItem Disconnect = new MenuItem("Disconnect");
+		Disconnect.setOnAction(e -> {
+			try {
+				if(Database.connected == true){
+					Database.closeConnection();
+				}
+			} catch (SQLException e1) {
+				AlertBox.display("Error", "Error While Closing Connection");
+			}
+		});
+		MenuItem Settings = new MenuItem("Settings");
+		connectMenu.getItems().addAll(Connect, Disconnect, Settings);
+		
 		//Main Menu Bar
 		MenuBar menuBar = new MenuBar();
-		menuBar.getMenus().addAll(fileMenu);
+		menuBar.getMenus().addAll(fileMenu, editMenu, connectMenu);
 		
 		window.setOnCloseRequest(e -> {
 			e.consume();
@@ -113,7 +153,7 @@ public class MainApp extends Application{
 				Database.closeConnection();
 			}
 		} catch (SQLException e1) {
-			AlertBox.display("error", "Error While Closing Connection");
+			AlertBox.display("Error", "Error While Closing Connection");
 		}
 		System.out.println("Properly Closed");
 		window.close();
