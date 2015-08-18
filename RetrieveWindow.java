@@ -132,7 +132,7 @@ public class RetrieveWindow {
 						retrieve.setOnAction(e -> {
 							
 							try {
-								String query3 = "SELECT encryptedpass FROM credentials WHERE website = '" + requestedData.get(0) + "' and username = '" + requestedData.get(1) +"'";
+								String query3 = "SELECT encryptedpass FROM credentials WHERE website = '" + requestedData.get(0) + "' AND username = '" + requestedData.get(1) +"'";
 								Database.setQuery(query3);
 								Database.resultSet = Database.prpStmt.executeQuery();
 								String encryptedPassword = "";
