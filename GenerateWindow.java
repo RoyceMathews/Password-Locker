@@ -8,6 +8,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -39,6 +41,19 @@ public class GenerateWindow{
 		
 		Button saveButton = new Button("Save Keys");
 		saveButton.setText("Save Keys");
+		
+		savePrivateInput.setOnKeyPressed(new EventHandler<KeyEvent>(){
+
+			@Override
+			public void handle(KeyEvent key) {
+				// TODO Auto-generated method stub
+	            if (key.getCode().equals(KeyCode.ENTER))
+	            {
+	            	saveButton.fire();
+	            }
+			}
+	    });
+		
 		saveButton.setOnAction(new EventHandler<ActionEvent>(){
 			@Override
 			public void handle (ActionEvent event) {

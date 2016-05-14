@@ -56,6 +56,12 @@ public class RSA {
 		file.close();
 		exists = true;
 	}
+	RSA(String key1, String key2, String key3){
+		N = new BigInteger(key1);
+		Z = new BigInteger(key2);
+		D = new BigInteger(key3);
+		exists = true;
+	}
 	
 	static void saveKeys(String publicKeys, String privateKey) throws FileNotFoundException{
 		
@@ -71,6 +77,14 @@ public class RSA {
 		output.println(D);
 		output.close();
 		System.out.println("Keys have been saved");
+	}
+	
+	static String[] saveKeysDatabase(){	// returns keys to be put into database
+		String [] keyArray = new String [3];
+		keyArray[0] = N.toString();
+		keyArray[1] = Z.toString();
+		keyArray[2] = D.toString();
+		return keyArray;
 	}
 	
 	static boolean doesExist(){

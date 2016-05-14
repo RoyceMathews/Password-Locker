@@ -6,6 +6,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -13,6 +14,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
@@ -65,6 +68,16 @@ public class UpdateTable {
 		}
 		catch (SQLException e2) {
 			AlertBox.display("Error", "Error with Connection to Database");
+		}
+		finally{
+			try{
+			if(Database.resultSet != null){
+				Database.resultSet.close();
+			}
+			Database.prpStmt.close();
+			} catch (SQLException e){
+				AlertBox.display("Error", "SQL Error");
+			}
 		}
 		ObservableList<String> toWebsiteBox = FXCollections.observableArrayList(websiteFromDatabase);
 		websiteList.setItems(toWebsiteBox);
@@ -145,6 +158,20 @@ public class UpdateTable {
 						Button retrieve = new Button("Change Password");
 						GridPane.setConstraints(retrieve, 2, 3);
 						grid.getChildren().add(retrieve);
+						
+						newPassword.setOnKeyPressed(new EventHandler<KeyEvent>()
+					    {
+				
+							@Override
+							public void handle(KeyEvent key) {
+								// TODO Auto-generated method stub
+					            if (key.getCode().equals(KeyCode.ENTER))
+					            {
+					            	retrieve.fire();
+					            }
+							}
+					    });
+						
 						retrieve.setOnAction(e -> {
 							
 							try {
@@ -195,5 +222,6 @@ public class UpdateTable {
 		Scene scene = new Scene(layout);
 		window.setScene(scene);
 		window.show();
+		websiteList.requestFocus();
 	}
 }

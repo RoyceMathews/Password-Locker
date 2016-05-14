@@ -10,6 +10,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -41,6 +43,19 @@ public class ImportWindow{
 		
 		Button importKeysButton = new Button("Import Keys");
 		importKeysButton.setText("Import Keys");
+		
+		importPrivateInput.setOnKeyPressed(new EventHandler<KeyEvent>(){
+
+			@Override
+			public void handle(KeyEvent key) {
+				// TODO Auto-generated method stub
+	            if (key.getCode().equals(KeyCode.ENTER))
+	            {
+	            	importKeysButton.fire();
+	            }
+			}
+	    });
+		
 		importKeysButton.setOnAction(new EventHandler<ActionEvent>(){
 			@Override
 			public void handle (ActionEvent event) {
@@ -64,7 +79,7 @@ public class ImportWindow{
 					else if(publicFile.exists() && privateFile.exists()){
 						RSA newObject = new RSA(importInput.getText(), importPrivateInput.getText());
 						
-						Label imported = new Label("Keys have been generated and saved.");
+						Label imported = new Label("Keys have been imported.");
 						GridPane.setConstraints(imported, 1 , 2);
 						
 						importGrid.getChildren().remove(importKeysButton);

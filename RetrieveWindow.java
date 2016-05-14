@@ -1,12 +1,11 @@
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Observable;
-
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -14,11 +13,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-
+// when the second choice box selection changes after the retrieve button is pressed, errors occur
 public class RetrieveWindow {
 	public static void display(MenuBar menuBar, HBox bot, Stage window){
 		BorderPane retrieveLayout = new BorderPane();
@@ -51,10 +52,19 @@ public class RetrieveWindow {
 				}
 			}
 		}catch (ClassNotFoundException e) {
-			AlertBox.display("Error", "Error Loading MySQL Driver");
+			AlertBox.display("Error", "Error Loading SQLite Driver");
 		}
 		catch (SQLException e2) {
 			AlertBox.display("Error", "Error with Connection to Database");
+		} finally{
+			try{
+			if(Database.resultSet != null){
+				Database.resultSet.close();
+			}
+			Database.prpStmt.close();
+			} catch (SQLException e){
+				AlertBox.display("Error", "SQL Error");
+			}
 		}
 		
 		ObservableList<String> toWebsiteBox = FXCollections.observableArrayList(websiteFromDatabase);
@@ -86,11 +96,11 @@ public class RetrieveWindow {
 						grid.getChildren().add(usernameList);
 						//add another choicebox with a list of usernames, add a enter button, and display password below or in a new window
 						if(requestedData.isEmpty()){
-							requestedData.add(0, websiteFromDatabase.get(new_value.intValue()));
+							requestedData.add(websiteFromDatabase.get(new_value.intValue()));
 						}
 						else{	
-						requestedData.clear();
-						requestedData.add(0, websiteFromDatabase.get(new_value.intValue()));
+						//requestedData.clear();
+						requestedData.set(0, websiteFromDatabase.get(new_value.intValue()));
 						}
 						try {
 							String query2 = "SELECT username FROM credentials WHERE website = '" + websiteFromDatabase.get(new_value.intValue()) + "'";
@@ -112,7 +122,16 @@ public class RetrieveWindow {
 							usernameFromDatabase.clear(); // clear the list so if new website is picked, the usernames from the old website dont show in the box
 						} catch (SQLException e) {
 							AlertBox.display("Error", "Failed getting Usernames.");
-						}
+						}finally{
+							try{
+								if(Database.resultSet != null){
+									Database.resultSet.close();
+								}
+								Database.prpStmt.close();
+								} catch (SQLException e){
+									AlertBox.display("Error", "SQL Error");
+								}
+							}
 						usernameList.setMinWidth(150);
 						GridPane.setConstraints(usernameList, 1, 1);
 						
@@ -122,16 +141,36 @@ public class RetrieveWindow {
 									@Override
 									public void changed(ObservableValue<? extends Number> ov, Number value, Number new_value) {
 										//Store username in requestedData, add submit button that will send the requestedData Arraylist to the displayPassword Method in AlertBox
-										requestedData.add(1, usernames.get(new_value.intValue()));
+										if(requestedData.size() == 1){
+
+											requestedData.add(usernames.get(new_value.intValue()));
+										}
+										else{
+											requestedData.set(1, usernames.get(new_value.intValue()));
+										}
+										
 									}
 									
 								});
 						Button retrieve = new Button("Retrieve Password");
 						GridPane.setConstraints(retrieve, 1, 2);
 						grid.getChildren().add(retrieve);
+						
+						usernameList.setOnKeyPressed(new EventHandler<KeyEvent>(){
+
+							@Override
+							public void handle(KeyEvent key) {
+								// TODO Auto-generated method stub
+					            if (key.getCode().equals(KeyCode.ENTER))
+					            {
+					            	retrieve.fire();
+					            }
+							}
+					    });
+						
 						retrieve.setOnAction(e -> {
 							
-							try {
+							try {	// reselecting username without changing website after already pressing retrieve password causes an error
 								String query3 = "SELECT encryptedpass FROM credentials WHERE website = '" + requestedData.get(0) + "' AND username = '" + requestedData.get(1) +"'";
 								Database.setQuery(query3);
 								Database.resultSet = Database.prpStmt.executeQuery();
@@ -144,32 +183,51 @@ public class RetrieveWindow {
 								}
 								else{
 								
-									requestedData.add(2, RSA.decrypt(encryptedPassword));
+									
+									if(requestedData.size() == 2){
+										requestedData.add(RSA.decrypt(encryptedPassword));
+									}
+									else{
+										requestedData.set(2, RSA.decrypt(encryptedPassword));
+									}
+									//System.out.println(requestedData);
 									AlertBox.displayPassword(requestedData);
-									requestedData.clear();
+									/// 
+//									requestedData.clear();
 									
 									//The code below can be added if it is desired to close the program after displaying the password
-									/*
-									if(RSA.doesExist()){
-										RSA.deleteKeys();
-										}
-										System.gc();
-										try {
-											if(Database.connected == true){
-												Database.closeConnection();
-											}
-										} catch (SQLException e1) {
-											AlertBox.display("error", "Error While Closing Connection");
-										}
-										System.out.println("Properly Closed");
-										window.close();
-										
-										 * 
-										 */
 									
-								}			
+//									if(RSA.doesExist()){
+//										RSA.deleteKeys();
+//										}
+//										System.gc();
+//										try {
+//											if(Database.connected == true){
+//												Database.closeConnection();
+//											}
+//										} catch (SQLException e1) {
+//											AlertBox.display("error", "Error While Closing Connection");
+//										}
+//										System.out.println("Properly Closed");
+//										window.close();
+										
+										 
+									
+								}
+								requestedData.clear();
+								display(menuBar, bot, window);
 							} catch (SQLException e1) {
 								AlertBox.display("Error", "Error Getting Password from Database.");
+							}
+							finally{
+								if(Database.resultSet != null){
+									try{
+										Database.resultSet.close();
+										//Database.prpStmt.close();
+										} catch (SQLException e1){
+											AlertBox.display("Error", "SQL Error");
+										}
+								}
 							}
 						});
 						
@@ -200,5 +258,6 @@ public class RetrieveWindow {
 		
 		Scene retrieveScene = new Scene(retrieveLayout);
 		window.setScene(retrieveScene);		
+		websiteList.requestFocus();
 	}
 }

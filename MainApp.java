@@ -8,8 +8,20 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.geometry.Insets;
-import java.sql.SQLException;
 
+import java.sql.SQLException;
+// Get rid of generate keys and import keys
+// this should be done automatically
+// if keys exist, import, else create new
+// move update and delete to buttons
+// generate keys and import keys should be in the menu bar
+
+// Consolidate keys into one file
+// add window at beginning that asks for a password
+	// this password should be encrypted when stored with its own RSA keys
+	// maybe make a table that store all the keys and password instead of text files DO THIS
+	// should contain 2 columns, auto incrementing id and a column for the data
+	// password should also encrypt the RSA keys
 
 public class MainApp extends Application{
 
@@ -18,6 +30,14 @@ public class MainApp extends Application{
 	
 	
 	public static void main(String[] args) {
+		
+		
+		try {
+			onStart();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		launch(args);
 
 	}
@@ -25,91 +45,67 @@ public class MainApp extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		window = primaryStage;
-		window.setTitle("Password Encryption");
+		window.setTitle("Password Locker");
 		
 		//File menu
 		Menu fileMenu = new Menu("File");
 		Menu editMenu = new Menu("Edit");
-		Menu connectMenu = new Menu("Connection");
-		/*
-		fileMenu.getItems().add(new MenuItem("Generate New Keys"));
-		fileMenu.getItems().add(new MenuItem("Import Existing Keys"));
-		fileMenu.getItems().add(new MenuItem("Enter New Data"));
-		fileMenu.getItems().add(new MenuItem("Retrieve Data"));
-		*/
-		//Add an update and a delete menu item
-		//Add Change Connection, Connect, and Disconnect
+		
 		MenuItem Exit = new MenuItem("Exit");
 		Exit.setOnAction(e -> {
 			closeProgram();
 		});
 		fileMenu.getItems().add(Exit);
 		
-		MenuItem Update = new MenuItem("Update");
-		Update.setOnAction(e -> {
-			UpdateTable.display();
-		});
-		MenuItem Delete = new MenuItem("Delete");
-		Delete.setOnAction(e -> {
-			DeleteFromTable.display();
-		});
-		editMenu.getItems().addAll(Update, Delete);
-				
-		MenuItem Connect = new MenuItem("Connect");
-		Connect.setOnAction(e -> {
-			try {
-				Database.initialize();
-				Database.connect();
-			} catch (ClassNotFoundException e1) {
-				AlertBox.display("Error", "Error Loading MySQL Driver");
-			} catch (SQLException e2){
-				AlertBox.display("Connection Error", "Error with Connection to Database");
-			}
-		});
-		
-		
-		MenuItem Disconnect = new MenuItem("Disconnect");
-		Disconnect.setOnAction(e -> {
-			try {
-				if(Database.connected == true){
-					Database.closeConnection();
-				}
-			} catch (SQLException e1) {
-				AlertBox.display("Error", "Error While Closing Connection");
-			}
-		});
-		MenuItem Settings = new MenuItem("Settings");
-		connectMenu.getItems().addAll(Connect, Disconnect, Settings);
+		HBox bot = new HBox();
+		bot.setPadding(new Insets(15,12,15,12));
+		bot.setSpacing(10);
 		
 		//Main Menu Bar
 		MenuBar menuBar = new MenuBar();
-		menuBar.getMenus().addAll(fileMenu, editMenu, connectMenu);
+		menuBar.getMenus().addAll(fileMenu, editMenu);
 		
 		window.setOnCloseRequest(e -> {
 			e.consume();
 			closeProgram();
 		});
 		
+		MenuItem Generate = new MenuItem("Generate");	// Change to Generate Keys (was Update)
+		Generate.setOnAction(e -> {
+			GenerateWindow.display(menuBar, bot, window);
+			//UpdateTable.display();
+		});
+		MenuItem Import = new MenuItem("Import");	// Change to Import Keys (was Delete)
+		Import.setOnAction(e -> {
+			ImportWindow.display(menuBar, bot, window);
+			//DeleteFromTable.display();
+		});
+		MenuItem Change = new MenuItem("Change Password");	// Change to Import Keys (was Delete)
+		Change.setOnAction(e -> {
+			ChangePassword.display();
+			//DeleteFromTable.display();
+		});
 		
 		
-		HBox bot = new HBox();
-		bot.setPadding(new Insets(15,12,15,12));
-		bot.setSpacing(10);
 		
+		editMenu.getItems().addAll(Generate, Import, Change);
+			
 		////// Buttons
 		Button generateButton = new Button("Generate");
-		generateButton.setText("Generate RSA Keys");
+		generateButton.setText("Update");	// Generate RSA Keys
 		bot.getChildren().add(generateButton);
 		generateButton.setOnAction(e -> {
+			UpdateTable.display();
 			//Displays the Generate Window
-			GenerateWindow.display(menuBar, bot, window);		
+			//GenerateWindow.display(menuBar, bot, window);		// change to update was generate	
 		});
 		
 		Button importButton = new Button("Import");
-		importButton.setText("Import RSA Keys");
+		importButton.setText("Delete");	// Import RSA Keys
 		importButton.setOnAction(e -> { 
+			DeleteFromTable.display();
 			// Displays The Import Window
-			ImportWindow.display(menuBar, bot, window);
+			//ImportWindow.display(menuBar, bot, window);		// Change to delete was import
 		});
 		bot.getChildren().add(importButton);
 		
@@ -140,7 +136,21 @@ public class MainApp extends Application{
 		window.show();
 		
 		
+		/// Implement both create and Enter password here
+		if(!Database.exists){
+			CreatePassword.setWindow(window);
+			CreatePassword.display();
+		}
+		else{
+			EnterPassword.setWindow(window);
+			EnterPassword.display();
+		}
 		
+	}
+	
+	private static void onStart() throws ClassNotFoundException, SQLException{
+		Database.initialize();
+		Database.connect();
 	}
 
 	private void closeProgram(){
