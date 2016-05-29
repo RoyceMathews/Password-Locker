@@ -11,6 +11,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
 import javafx.scene.input.KeyCode;
@@ -31,7 +32,7 @@ public class RetrieveWindow {
 		Label chooseSite = new Label("Choose a Website");
 		GridPane.setConstraints(chooseSite, 0, 0);
 				
-		ChoiceBox websiteList = new ChoiceBox();
+		ComboBox websiteList = new ComboBox();
 		
 		ArrayList<String> websiteFromDatabase = new ArrayList<>();
 		try {
@@ -70,6 +71,7 @@ public class RetrieveWindow {
 		ObservableList<String> toWebsiteBox = FXCollections.observableArrayList(websiteFromDatabase);
 		websiteList.setItems(toWebsiteBox);
 		websiteList.setMinWidth(100);
+		websiteList.setVisibleRowCount(6);
 		GridPane.setConstraints(websiteList, 0, 1);
 		
 		ChoiceBox placeHolder = new ChoiceBox();
@@ -92,7 +94,7 @@ public class RetrieveWindow {
 					public void changed(ObservableValue<? extends Number> ov, Number value, Number new_value) {
 						grid.getChildren().remove(placeHolder);
 						grid.getChildren().remove(placeHolder2);
-						ChoiceBox usernameList = new ChoiceBox();
+						ComboBox usernameList = new ComboBox();
 						grid.getChildren().add(usernameList);
 						//add another choicebox with a list of usernames, add a enter button, and display password below or in a new window
 						if(requestedData.isEmpty()){
@@ -133,6 +135,7 @@ public class RetrieveWindow {
 								}
 							}
 						usernameList.setMinWidth(150);
+						usernameList.setVisibleRowCount(6);
 						GridPane.setConstraints(usernameList, 1, 1);
 						
 						usernameList.getSelectionModel().selectedIndexProperty().addListener(
